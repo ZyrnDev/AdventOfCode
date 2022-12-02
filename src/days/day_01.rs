@@ -7,8 +7,8 @@ pub fn invoke(selection: SectionSelection) {
             section1();
             section2();
         },
-        SectionSelection::Single(1) => section1(),
-        SectionSelection::Single(2) => section2(),
+        SectionSelection::Single(1) => { section1(); },
+        SectionSelection::Single(2) => { section2(); },
         _ => println!("Section {:#?} not implemented", selection),
     }
 }
