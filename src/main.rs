@@ -1,4 +1,5 @@
 use clap::Parser;
+use paste::paste;
 
 mod days;
 use advent_of_code::common::*;
@@ -12,44 +13,47 @@ struct Args {
     /// The part to run
     #[arg(short, long)]
     section: Option<u8>,
+
+    /// The test case to run
+    #[arg(short, long)]
+    test: Option<u8>,
 }
+
+macro_rules! execute_section {
+    ($day:literal, $section:literal, $input:expr) => {
+        paste! {
+            days::[<day $day>]::[<section $section>]($input)
+        }
+    };
+}
+
+fn execute_section(day: u8, section: u8, input: &str) {
+    let result = match (day, section) {
+        (1, 1) => execute_section!(1, 1, input),
+        (1, 2) => execute_section!(1, 2, input),
+        (2, 1) => execute_section!(2, 1, input),
+        (2, 2) => execute_section!(2, 2, input),
+        _ => panic!("Day {}, Section {} not implemented", day, section),
+    };
+
+    println!("Day {}, Section {} = {}", day, section, result);
+}
+
 fn main() {
     let args = Args::parse();
 
-    let section = match args.section {
-        Some(section) => SectionSelection::Single(section),
-        None => SectionSelection::All,
+    let day = match args.day {
+        1..=25 => args.day,
+        _ => panic!("Day '{}' is not valid. Day must be 1 to 25 (inclusive)", args.day),
     };
     
-    let invoke: fn(SectionSelection) = match args.day {
-        1 => days::day_01::invoke,
-        // 2 => days::day_02::invoke,
-        // 3 => days::day_03::invoke,
-        // 4 => days::day_04::invoke,
-        // 5 => days::day_05::invoke,
-        // 6 => days::day_06::invoke,
-        // 7 => days::day_07::invoke,
-        // 8 => days::day_08::invoke,
-        // 9 => days::day_09::invoke,
-        // 10 => days::day_10::invoke,
-        // 11 => days::day_11::invoke,
-        // 12 => days::day_12::invoke,
-        // 13 => days::day_13::invoke,
-        // 14 => days::day_14::invoke,
-        // 15 => days::day_15::invoke,
-        // 16 => days::day_16::invoke,
-        // 17 => days::day_17::invoke,
-        // 18 => days::day_18::invoke,
-        // 19 => days::day_19::invoke,
-        // 20 => days::day_20::invoke,
-        // 21 => days::day_21::invoke,
-        // 22 => days::day_22::invoke,
-        // 23 => days::day_23::invoke,
-        // 24 => days::day_24::invoke,
-        // 25 => days::day_25::invoke,
-        _ => panic!("Day {} not implemented", args.day),
-    };
+    let input = fetch_input(day, args.test);
 
-    invoke(section);
-    
+    match args.section {
+        Some(section) => execute_section(args.day, section, &input),
+        None => {
+            execute_section(args.day, 1, &input);
+            execute_section(args.day, 2, &input);
+        }
+    };
 }
