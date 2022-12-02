@@ -1,10 +1,7 @@
 use clap::Parser;
 
 mod days;
-use days::*;
-
-mod common;
-use common::*;
+use advent_of_code::common::*;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -24,33 +21,35 @@ fn main() {
         None => SectionSelection::All,
     };
     
-    match args.day {
-        1 => day_01::invoke(section),
-        // 2 => day_02::invoke(section),
-        // 3 => day_03::invoke(section),
-        // 4 => day_04::invoke(section),
-        // 5 => day_05::invoke(section),
-        // 6 => day_06::invoke(section),
-        // 7 => day_07::invoke(section),
-        // 8 => day_08::invoke(section),
-        // 9 => day_09::invoke(section),
-        // 10 => day_10::invoke(section),
-        // 11 => day_11::invoke(section),
-        // 12 => day_12::invoke(section),
-        // 13 => day_13::invoke(section),
-        // 14 => day_14::invoke(section),
-        // 15 => day_15::invoke(section),
-        // 16 => day_16::invoke(section),
-        // 17 => day_17::invoke(section),
-        // 18 => day_18::invoke(section),
-        // 19 => day_19::invoke(section),
-        // 20 => day_20::invoke(section),
-        // 21 => day_21::invoke(section),
-        // 22 => day_22::invoke(section),
-        // 23 => day_23::invoke(section),
-        // 24 => day_24::invoke(section),
-        // 25 => day_25::invoke(section),
-        _ => println!("Day {} not implemented", args.day),
-    }
+    let invoke: fn(SectionSelection) = match args.day {
+        1 => days::day_01::invoke,
+        // 2 => days::day_02::invoke,
+        // 3 => days::day_03::invoke,
+        // 4 => days::day_04::invoke,
+        // 5 => days::day_05::invoke,
+        // 6 => days::day_06::invoke,
+        // 7 => days::day_07::invoke,
+        // 8 => days::day_08::invoke,
+        // 9 => days::day_09::invoke,
+        // 10 => days::day_10::invoke,
+        // 11 => days::day_11::invoke,
+        // 12 => days::day_12::invoke,
+        // 13 => days::day_13::invoke,
+        // 14 => days::day_14::invoke,
+        // 15 => days::day_15::invoke,
+        // 16 => days::day_16::invoke,
+        // 17 => days::day_17::invoke,
+        // 18 => days::day_18::invoke,
+        // 19 => days::day_19::invoke,
+        // 20 => days::day_20::invoke,
+        // 21 => days::day_21::invoke,
+        // 22 => days::day_22::invoke,
+        // 23 => days::day_23::invoke,
+        // 24 => days::day_24::invoke,
+        // 25 => days::day_25::invoke,
+        _ => panic!("Day {} not implemented", args.day),
+    };
+
+    invoke(section);
     
 }

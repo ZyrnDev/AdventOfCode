@@ -5,5 +5,5 @@ curl 'https://adventofcode.com/2022/day/1/input' \
     --silent \
     --compressed \
     --create-dirs \
-    -o data/days/$DAY/input \
+    -o data/days/$DAY/sections/1/input \
     --cookie "$(cat .cookie)" 
