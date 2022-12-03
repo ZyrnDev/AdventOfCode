@@ -1,7 +1,7 @@
 use clap::Parser;
-use paste::paste;
 
 mod days;
+use days::SectionFn;
 use advent_of_code::common::*;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -19,24 +19,19 @@ struct Args {
     test: Option<u8>,
 }
 
-macro_rules! execute_section {
-    ($day:literal, $section:literal, $input:expr) => {
-        paste! {
-            days::[<day $day>]::[<section $section>]($input)
-        }
-    };
+#[derive(Debug)]
+enum SectionSelection {
+    All,
+    One,
+    Two
 }
 
-fn execute_section(day: u8, section: u8, input: &str) {
-    let result = match (day, section) {
-        (1, 1) => execute_section!(1, 1, input),
-        (1, 2) => execute_section!(1, 2, input),
-        (2, 1) => execute_section!(2, 1, input),
-        (2, 2) => execute_section!(2, 2, input),
-        _ => panic!("Day {}, Section {} not implemented", day, section),
-    };
+fn time_section(section_fn: SectionFn, input: &str) -> (u32, std::time::Duration) {
+    let start = std::time::Instant::now();
+    let result = section_fn(input);
+    let duration = start.elapsed();
 
-    println!("Day {}, Section {} = {}", day, section, result);
+    (result, duration)
 }
 
 fn main() {
@@ -46,14 +41,32 @@ fn main() {
         1..=25 => args.day,
         _ => panic!("Day '{}' is not valid. Day must be 1 to 25 (inclusive)", args.day),
     };
+
+    let section = match args.section {
+        Some(1) => SectionSelection::One,
+        Some(2) => SectionSelection::Two,
+        None => SectionSelection::All,
+        _ => panic!("Section '{}' is not valid. Section must be 1 or 2, or blank for all", args.section.unwrap()),
+    };
+
+    let (section1, section2) = days::DAY_SECTIONS[(day - 1) as usize];
     
     let input = fetch_input(day, args.test);
-
-    match args.section {
-        Some(section) => execute_section(args.day, section, &input),
-        None => {
-            execute_section(args.day, 1, &input);
-            execute_section(args.day, 2, &input);
-        }
+    
+    match section {
+        SectionSelection::All => {
+            let (result, duration) = time_section(section1, &input);
+            println!("Day {}, Section {} = {} in {}ms", day, 1, result, duration.as_millis());
+            let (result, duration) = time_section(section2, &input);
+            println!("Day {}, Section {} = {} in {}ms", day, 2, result, duration.as_millis());
+        },
+        SectionSelection::One => {
+            let (result, duration) = time_section(section1, &input);
+            println!("Day {}, Section {} = {} in {}ms", day, 1, result, duration.as_millis());
+        },
+        SectionSelection::Two => {
+            let (result, duration) = time_section(section2, &input);
+            println!("Day {}, Section {} = {} in {}ms", day, 2, result, duration.as_millis());
+        },
     };
 }
