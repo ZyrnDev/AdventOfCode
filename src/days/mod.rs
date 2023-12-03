@@ -1,5 +1,5 @@
 pub mod day1;
-// pub mod day2;
+pub mod day2;
 // pub mod day3;
 // pub mod day4;
 // pub mod day5;
@@ -28,6 +28,7 @@ pub type SectionFn = fn(&str) -> u32;
 pub type Day = (SectionFn, SectionFn);
 pub const DAY_SECTIONS: [Day; 25] = [
     (day1::section1, day1::section2),
+    (day2::section1, day2::section2),
     (day1::section1, day1::section2),
     (day1::section1, day1::section2),
     (day1::section1, day1::section2),
@@ -51,8 +52,6 @@ pub const DAY_SECTIONS: [Day; 25] = [
     (day1::section1, day1::section2),
     (day1::section1, day1::section2),
     (day1::section1, day1::section2),
-    (day1::section1, day1::section2),
-    // (day2::section1, day2::section2),
     // (day3::section1, day3::section2),
     // (day4::section1, day4::section2),
     // (day5::section1, day5::section2),
