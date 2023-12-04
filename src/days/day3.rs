@@ -17,8 +17,6 @@ struct SchematicSymbol {
 struct EngineSchematic {
     numbers: Vec<SchematicNumber>,
     symbols: Vec<SchematicSymbol>,
-    width: usize,
-    height: usize,
 }
 
 static NEIGHBOUR_RANGE: std::ops::RangeInclusive<i32> = -1..=1;
@@ -37,7 +35,6 @@ impl SchematicNumber {
 }
 
 fn parser(input: &str) -> Result<EngineSchematic, &'static str> {
-    let height = input.lines().count();
     let width = input.lines().next().unwrap_or(input).len();
 
     if input.lines().any(|row| row.len() != width) {
@@ -47,8 +44,6 @@ fn parser(input: &str) -> Result<EngineSchematic, &'static str> {
     let mut schematic = EngineSchematic {
         numbers: Vec::new(),
         symbols: Vec::new(),
-        width,
-        height,
     };
 
     for (y, line) in input.lines().enumerate() {
@@ -65,14 +60,14 @@ fn parser(input: &str) -> Result<EngineSchematic, &'static str> {
                     let number = chars.iter().cloned().take_while(|(_, c)| c.is_digit(10)).collect::<Vec<(usize, char)>>();
                     let length = number.len();
                     schematic.numbers.push(SchematicNumber {
-                        x: number.first().map(|(i, c)| *i).expect("Invalid input, must be a number"),
+                        x: number.first().map(|(i, _)| *i).expect("Invalid input, must be a number"),
                         y: y,
                         length: number.len(),
                         value: number.iter().map(|(_, c)| c.to_digit(10).unwrap()).fold(0, |acc, digit| acc * 10 + digit),
                     });
                     chars = chars.into_iter().skip(length).collect();
                 }
-                Some(c) => {
+                Some(_) => {
                     let symbol = chars.first();
                     schematic.symbols.push(SchematicSymbol {
                         x: symbol.map(|(i, _)| *i).expect("Could not get symbol position"),
@@ -92,13 +87,12 @@ fn parser(input: &str) -> Result<EngineSchematic, &'static str> {
 pub fn section1(input: &str) -> u32 {
     let schematic = parser(input).unwrap();
 
-    let mut sum = 0;
-
-    for (x, y, symbol) in schematic.symbols.iter().map(|s| (s.x, s.y, s.symbol)) {
-        sum += schematic.numbers.iter().filter(|n| n.neighbours(x, y)).map(|n| n.value).sum::<u32>();
-    }
-
-    sum
+    schematic.symbols.iter()
+        .map(|symbol| 
+            schematic.numbers.iter()
+                .filter(|n| n.neighbours(symbol.x, symbol.y))
+                .map(|n| n.value).sum::<u32>())
+        .sum::<u32>()
 }
 
 pub fn section2(input: &str) -> u32 {
